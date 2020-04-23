@@ -13,7 +13,7 @@ class InteractiveRecord
       DB[:conn].results_as_hash = true
       table_info = DB[:conn].execute("PRAGMA table_info('#{table_name}')")
       table_info.each{|info| columns << info["name"]}
-      
+
       columns.compact
    end
 
@@ -46,9 +46,15 @@ class InteractiveRecord
    end
 
    def self.find_by_name(name)
-      sql = "SELECT * FROM #{self.table_name} WHERE name = '#{name}'"
+      sql = "SELECT * FROM #{self.table_name} WHERE name = ?"
 
-      result = DB[:conn].execute(sql)
+      DB[:conn].execute(sql,name)
+   end
+
+   def self.find_by(attribute)
+      sql = "SELECT * FROM #{self.table_name} WHERE #{attribute.keys.first.to_s} = ?"
+
+      DB[:conn].execute(sql, attribute.values.first)
    end
 
 end
